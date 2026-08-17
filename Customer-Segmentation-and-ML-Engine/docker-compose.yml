@@ -1,0 +1,61 @@
+version: "3.9"
+networks:
+  retail_net:
+    driver: bridge
+volumes:
+  postgres_data:
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: retail_postgres
+    environment:
+      POSTGRES_USER: retail
+      POSTGRES_PASSWORD: retail123
+      POSTGRES_DB: retail_db
+    ports: ["5432:5432"]
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U retail"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [retail_net]
+
+  redis:
+    image: redis:7-alpine
+    container_name: retail_redis
+    ports: ["6379:6379"]
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    networks: [retail_net]
+
+  feature-service:
+    build:
+      context: ./feature-service
+      dockerfile: Dockerfile
+    container_name: retail_feature
+    ports: ["8002:8002"]
+    volumes:
+      - ./datasets:/app/datasets:ro
+      - ./models:/app/models
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks: [retail_net]
+    restart: unless-stopped
+
+  segmentation-service:
+    build:
+      context: ./segmentation-service
+      dockerfile: Dockerfile
+    container_name: retail_segmentation
+    ports: ["8004:8004"]
+    volumes:
+      - ./datasets:/app/datasets:ro
+      - ./models:/app/models
+    environment:
+      - PYTHONUNBUFFERED=1
+      - N_CLUSTERS=4
+    networks: [retail_net]
+    restart: unless-stopped

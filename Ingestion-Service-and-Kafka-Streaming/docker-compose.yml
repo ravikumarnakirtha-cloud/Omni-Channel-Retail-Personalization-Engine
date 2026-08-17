@@ -1,0 +1,78 @@
+version: "3.9"
+networks:
+  retail_net:
+    driver: bridge
+volumes:
+  postgres_data:
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: retail_postgres
+    environment:
+      POSTGRES_USER: retail
+      POSTGRES_PASSWORD: retail123
+      POSTGRES_DB: retail_db
+    ports: ["5432:5432"]
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U retail"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [retail_net]
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: retail_zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks: [retail_net]
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: retail_kafka
+    depends_on: [zookeeper]
+    ports: ["9092:9092","29092:29092"]
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    healthcheck:
+      test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+    networks: [retail_net]
+
+  feature-service:
+    build:
+      context: ./feature-service
+      dockerfile: Dockerfile
+    container_name: retail_feature
+    ports: ["8002:8002"]
+    volumes:
+      - ./datasets:/app/datasets:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks: [retail_net]
+    restart: unless-stopped
+
+  ingestion-service:
+    build:
+      context: ./ingestion-service
+      dockerfile: Dockerfile
+    container_name: retail_ingestion
+    ports: ["8001:8001"]
+    depends_on: [kafka, postgres]
+    environment:
+      - PYTHONUNBUFFERED=1
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    networks: [retail_net]
+    restart: unless-stopped
