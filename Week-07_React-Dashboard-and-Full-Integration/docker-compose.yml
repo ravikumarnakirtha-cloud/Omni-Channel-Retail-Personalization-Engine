@@ -1,0 +1,136 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: retail_postgres
+    environment:
+      POSTGRES_USER: retail
+      POSTGRES_PASSWORD: retail123
+      POSTGRES_DB: retail_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U retail"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [retail_net]
+
+  redis:
+    image: redis:7-alpine
+    container_name: retail_redis
+    ports:
+      - "6379:6379"
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [retail_net]
+
+  feature-service:
+    build:
+      context: ./feature-service
+      dockerfile: Dockerfile
+    container_name: retail_feature
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./datasets:/app/datasets:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [retail_net]
+    restart: unless-stopped
+
+  segmentation-service:
+    build:
+      context: ./segmentation-service
+      dockerfile: Dockerfile
+    container_name: retail_segmentation
+    ports:
+      - "8004:8004"
+    volumes:
+      - ./datasets:/app/datasets:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [retail_net]
+    restart: unless-stopped
+
+  ingestion-service:
+    build:
+      context: ./ingestion-service
+      dockerfile: Dockerfile
+    container_name: retail_ingestion
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./datasets:/app/datasets:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks: [retail_net]
+    restart: unless-stopped
+
+  notification-service:
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    container_name: retail_notification
+    ports:
+      - "8003:8003"
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks: [retail_net]
+    restart: unless-stopped
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: retail_gateway
+    ports:
+      - "3001:3001"
+    environment:
+      - REC_SERVICE_URL=http://segmentation-service:8004
+      - ING_SERVICE_URL=http://ingestion-service:8001
+      - FEAT_SERVICE_URL=http://feature-service:8002
+      - NOTIF_SERVICE_URL=http://notification-service:8003
+      - PORT=3001
+    depends_on:
+      - segmentation-service
+      - ingestion-service
+      - feature-service
+      - notification-service
+    networks: [retail_net]
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: retail_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:3001
+    depends_on:
+      - api-gateway
+    networks: [retail_net]
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  retail_net:
+    driver: bridge
