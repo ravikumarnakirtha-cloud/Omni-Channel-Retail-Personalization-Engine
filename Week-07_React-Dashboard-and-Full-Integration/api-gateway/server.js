@@ -114,7 +114,7 @@ app.get('/api/recommend/:userId', async (req, res) => {
   if (cached) return res.json({ ...cached, _cached: true });
 
   try {
-    const data = await proxy(SERVICES.feature, '/rfm/distribution', 'POST', { user_id: userId, top_n: Number(topN) });
+    const data = await proxy(SERVICES.recommendation, '/recommend', 'POST', { user_id: userId, top_n: Number(topN) });
     cacheSet(cacheKey, data);
     res.json(data);
   } catch (err) {
@@ -160,7 +160,7 @@ app.post('/api/ingest/transaction', async (req, res) => {
 // ── Trigger Offer ───────────────────────────────
 app.post('/api/trigger-offer', async (req, res) => {
   try {
-    const data = await proxy(SERVICES.notification, '/send', 'POST', req.body);
+    const data = await proxy(SERVICES.recommendation, '/trigger-offer', 'POST', req.body);
     res.json(data);
   } catch (err) {
     res.status(502).json({ error: 'Offer service unavailable', details: err.message });

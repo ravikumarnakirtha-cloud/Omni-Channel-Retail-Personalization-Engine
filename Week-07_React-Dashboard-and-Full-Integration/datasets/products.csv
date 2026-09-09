@@ -1,0 +1,38 @@
+product_id,name,category,price,brand
+79634690-8c5c-4240-8205-82b10c85c886,Headphones,Electronics,323.31,TechPro
+cbf743b9-e903-4a26-825c-7bde33e1d82c,Smartwatch,Electronics,373.35,ZenFit
+944989d7-0474-4130-959f-c793bf62259e,Keyboard,Electronics,119.36,SpeedRun
+69b6bb4a-cfaa-4878-91ae-e146f31c1955,Mouse,Electronics,341.57,NovaBrand
+d5ee97fe-7203-4277-a432-29e8207ec8be,Charger,Electronics,52.59,HydroLife
+1890b36f-a137-41e5-b5ed-1d9d565c4bd0,Tablet,Electronics,25.56,SpeedRun
+08cb9e44-2170-4369-9ab2-a47e52847e6c,Speaker,Electronics,117.12,NovaBrand
+28de6b67-c5da-4fd9-9ae6-64f199eb885d,Running Shoes,Footwear,304.98,NovaBrand
+542e404c-f975-45bf-b793-249b8d15665d,Sneakers,Footwear,107.42,NovaBrand
+08f682e0-0949-4d7f-9c1a-36bb48342221,Boots,Footwear,215.55,AcmeCorp
+9c0e36b8-29dc-48d8-9869-8d952c29dbdb,Sandals,Footwear,298.73,TechPro
+24665074-3a11-4fcf-82f7-1d50a0b2580f,Loafers,Footwear,381.81,TeaLeaf
+ad1fb5ee-a91c-4991-9341-e395d2beecef,T-Shirt,Apparel,352.08,DenimCo
+56ad6e1f-0691-4acd-a3de-c8da072e3963,Jeans,Apparel,146.15,ZenFit
+6eae25b5-bfd1-445a-b0d8-86e5ef9604a3,Jacket,Apparel,479.02,DenimCo
+bff07f43-24a8-4d20-b9e9-6cac1ecce307,Dress,Apparel,60.07,HydroLife
+11d7b21d-825c-442e-8c20-a64d4de4dd3c,Hoodie,Apparel,57.38,DenimCo
+a47d64f7-a098-44b9-8c64-05a8c978779f,Green Tea,Grocery,305.82,TechPro
+a0de6626-305c-473f-946f-bec5e72fa2b2,Coffee,Grocery,367.56,NovaBrand
+053f89ae-21b6-4267-baf4-f4be573d366f,Protein Bar,Grocery,71.15,HydroLife
+905f2110-caca-46ad-b1fc-61c3fda110f1,Nuts,Grocery,48.6,VitaPlus
+457d9d38-588b-41ff-8c67-d7258b51a8e6,Juice,Grocery,416.4,PeakGear
+6c37ac7c-22fb-489b-9e12-ba964446997b,Yoga Mat,Sports,443.86,DenimCo
+321b80eb-c6e9-42e0-a6f5-86598247acd3,Dumbbell,Sports,292.89,SpeedRun
+1308f602-c166-4cdc-868a-0b4938053d4d,Resistance Band,Sports,32.44,ZenFit
+f6df0b45-6106-42d3-8c75-195d0ad4baee,Water Bottle,Sports,388.79,SpeedRun
+e68cd9b3-0f66-4719-b9c8-10a5e0acfc32,Gym Bag,Sports,429.1,SpeedRun
+e19c753d-318c-4edb-b565-fc406c99c72c,Vitamin C,Health,196.25,AcmeCorp
+f1f6542b-4b3f-4e65-8d9a-766c8d57ad72,Vitamin D,Health,321.48,DenimCo
+7df8e284-e832-44a7-94ef-f17a4e5da9d6,Omega-3,Health,89.69,DenimCo
+0e9c5cdb-187a-4121-93cd-cd24adc53bc4,Probiotics,Health,112.65,VitaPlus
+ca3df109-0f94-4c65-bb50-5e247fa97614,Melatonin,Health,353.88,SpeedRun
+bdea1b76-1208-4a2f-b2e1-1aa8a5626500,Python Book,Books,308.46,TeaLeaf
+1791a541-fe39-430b-9626-a24acd85e08e,Data Science,Books,271.72,ZenFit
+168e2ef5-ab86-444e-ad38-6cbe82465e6a,Marketing,Books,90.06,HydroLife
+17c1c99f-c424-420e-8868-5ab21bafe8e5,Finance,Books,142.26,NovaBrand
+2341a1b6-ca76-4973-ad2e-4a906f9fd51d,Self-Help,Books,117.6,DenimCo
